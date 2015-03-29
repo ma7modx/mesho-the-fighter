@@ -1,0 +1,1533 @@
+	  //////////////////////////////////////////////////////////////////
+    ///   copyrights source pic el-main charcter [[ metal slug ]] :D     ///
+  ///                      hwever it neeeded alot of editing                      ///
+/////////////////////////////////////////////////////////////////
+
+#include<iostream>
+#include<SFML/Graphics.hpp>
+#include<SFML/Audio.hpp>
+#include<vector>
+
+#define PL_defultY 100
+#define PL_defultX 100
+// right
+#define PL_stand_R 0
+#define PL_right 100
+#define PL_down_R 200
+#define PL_stand_R_F 300
+#define PL_right_F 400
+#define PL_die_R 500
+#define PL_down_R_F 600
+#define PL_R_HIT 700
+// left
+#define PL_stand_L 800
+#define PL_left 900
+#define PL_down_L 1000
+#define PL_stand_L_F 1100
+#define PL_left_F 1200
+#define PL_die_L 1300
+#define PL_down_L_F 1400
+#define PL_L_HIT 1500
+
+#define PL_visual_x 200
+#define PL_visual_y 125
+							  ///200
+
+using namespace std;
+
+
+
+void Restart_music(sf::Clock&  , sf::Music& ) ;
+
+///  /// /// /// /// /// /// /// main code /// /// /// /// /// /// /// ///
+//void PLAYER_CODE(sf::RenderWindow& , sf::Sprite& , sf::Sprite& , vector<sf::Sprite>& ,  bool& , bool& ,
+//				        bool& , bool& , int& , int& ,int& ,int& , int& , int& , int& , int& , bool[] , bool[] , bool& ,
+//						bool[] , int[] , bool& , bool& , int& , bool& , bool& , bool& , bool& , float& ,
+//						bool& , sf::Clock& , int[] , int[] );
+
+void barmeel_code (int& , int& , bool& , bool& , int& , bool& ) ;
+
+
+void player_stands_up (int& , int& , bool& , bool& , bool& ,bool& , sf::RenderWindow& ,
+						bool& , int& , bool& , int& , int& , bool [] , bool [] , bool [] , int []);
+
+void Player_moves_right(int& , int& , int& , int& , int& , int& , bool& , bool[] , bool[]  ,
+					bool& , bool[] , int[] , bool& , bool& , sf::RenderWindow & , bool& , int& , bool&);
+
+void Player_moves_left(int& , int& , int& , int& , int& , int& ,bool& , bool [] , bool []  ,
+					bool& , bool[] , int[] , bool& , bool& , sf::RenderWindow & , bool& , int& , bool&);
+
+void Player_down(bool& , bool& , int& , int& , sf::RenderWindow& , int& , int& , int& ,
+				 bool& , int& , bool& , bool& , bool& , bool [] , bool [] , bool [] , int []) ;
+
+void Player_jump(int& , bool& , bool& );
+
+void Player_die (int& , int& , int& , int& , bool& );
+
+void Load_image_fire(bool [] , bool& , bool[] , int& , int& , int& , int& , sf::Sprite& , vector<sf::Sprite>& , bool[]
+					, sf::RenderWindow& mcreen , int , int , int[] );
+
+void Fire_moves(sf::RenderWindow& , float&  , sf::Clock& , vector<sf::Sprite>& , int[] , int [] , int& ,
+				 int& , bool [] , bool[] ,bool [] , bool& , bool& , int[], bool& , int& , int& , int& , int& , bool& );   // common
+
+void screen_moves (int& , bool& , int& , bool& , sf::RenderWindow& );
+
+void Check_fire_hit (int[] , int[] , int& , int& , bool[], float& , bool& , bool& , int& );    // common
+
+///
+
+void enemy_stands_up (int& , int& , bool& , bool& , bool& ,bool& , sf::RenderWindow& ,
+						bool& , int& , bool& , int& , int& , bool [] , bool [] , bool [] , int []);
+
+void enemy_moves_left(int& , int& , int& , int& , int& , int& ,bool& , bool [] , bool []  ,
+					bool& , bool[] , int[] , bool& , bool& , sf::RenderWindow & , bool& , int& , bool&);
+
+void enemy_moves_right(int& , int& , int& , int& , int& , int& , bool& , bool[] , bool[]  ,
+					bool& , bool[] , int[] , bool& , bool& , sf::RenderWindow & , bool& , int& , bool&);
+
+/// enemy's declarations
+int EN_x= -1000  , EN_y =-200 ;
+bool EN_press_z = false ;  // Z
+bool EN_press_right = false ;
+bool EN_press_left = false ;
+bool EN_press_down = false ;
+bool EN_press_space = false ;
+bool enemy_control = false ;
+/// the fire pic int.
+int CH_fire_picY1 = 200 , CH_fire_picX1 = 0 , CH_fire_picY2 = CH_fire_picY1+100 ,
+	 CH_fire_picX2 = 60 ;
+
+int EN_fire_picY1 = 0 , EN_fire_picX1 = 0 , EN_fire_picY2 = EN_fire_picY1+100 ,
+	 EN_fire_picX2 = 60 ;
+
+///
+bool main_char_dies = false ;
+bool enemy_dies = false ;
+int dies_pic = 0 ;
+int CH_set_down = 60 ;
+/// blocks
+int barmeel_x = -2000 , barmeel_y = -375 ;
+int bdarmeel_x = -99999 ;
+int barmeel_num = 0 ;
+bool barmeel_exist_R = false ;
+bool barmeel_exist_L = false ;
+bool barmeel_place = false ;
+int barmeel_height = 0 ;
+
+int main()
+{
+
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x00c);
+    cout << "\t\t\t    Game Over " <<endl<<endl;
+    sf::Sleep(2);
+    system("CLS");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x00a);
+    cout << " arrows : move \n\n Space : jump \n\n Left_ctrl : run \n\n Z : fire \n\n\n" ;
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x00f);
+	system("pause");
+
+
+    /// //////////////////////////////////////
+    // players info :-
+    //                           WHEN ch = -100,200
+    //                                   head =
+    //                                 centre = 150 , 300
+    //                                     foot =
+    //                                 Range y =
+    //                                 Range x = [180 ,-,  ]
+    /// /////////////////////////////////////
+
+    /// the main window                         // w,     h  ,  d
+    sf::RenderWindow mcreen(sf::VideoMode(1300, 650, 64), "2erd :P");
+
+	/// background
+    sf::Image Background ;
+    sf::Sprite background ;
+    Background.LoadFromFile("mmmmmm.png");
+    background.SetImage(Background);
+     int BG_x = 0 , BG_y = 0 ;
+
+ /// /// player character  ///////////////////////////////////////////// ///////////////
+	int CH_x= -100  , CH_y =200 ;  /// realty
+	float CH_health = 100 ;
+
+	sf::Image Player ;
+    sf::Sprite player ;
+    Player.LoadFromFile("new f player.png");
+	player.SetImage(Player);
+	player.Resize(4000,12000);
+
+    bool CH_jump = false ;
+	bool CH_up1 = true ;
+	bool CH_running = false ;
+	bool first_right = true ;
+	bool first_left = true ;
+	bool first_down = true ;
+	bool CH_down = false ;
+	bool CH_look_left ;
+	bool CH_right[10];             // used in fire
+	bool CH_left[10];
+	for(int i = 0 ; i<10 ; i++)
+	{CH_right[i]=true ; CH_left[i] = false ;}
+    /// player image cut
+    int CH_picY1 = PL_stand_R , CH_picX1 = 0 , CH_picX2 = 100 , CH_picY2 = PL_stand_R+PL_defultY ;
+    int CH_repeat_fire = 0 ;
+	bool CH_repeat_Fire = false ;
+
+
+    /// fire
+    sf::Image CH_gun_Fire ;
+	CH_gun_Fire.LoadFromFile("fires.png");
+	sf::Sprite CH_gun_H_fire ;
+	CH_gun_H_fire.SetImage(CH_gun_Fire);
+    CH_gun_H_fire.Resize(100,2600);
+	//fire lvl 1
+
+
+	CH_gun_H_fire.SetSubRect(sf::IntRect(CH_fire_picX1,CH_fire_picY1 , CH_fire_picX2 , CH_fire_picY2));
+	vector<sf::Sprite> CH_fire ;
+	for (int i = 0 ; i <10 ; i++)
+	{CH_fire.insert(CH_fire.begin(),CH_gun_H_fire);}
+
+    vector<sf::Sprite>::iterator it_fire ;
+	int *CH_Xfire = new int [10] , *CH_Yfire = new int [10] ;
+	for (int i = 0 ; i <10 ; i++)
+	//{CH_Xfire[i] = CH_x+PL_visual_x; CH_Yfire[i]= CH_y+PL_visual_y;}
+    {CH_Xfire[i] = -300; CH_Yfire[i]= -900;}
+	bool CH_fire1[10]  ;
+	for (int i = 0 ; i <10 ; i++)
+	CH_fire1[i] = false ;
+    int save[10];
+    for (int i = 0 ; i <10 ; i++)
+    save[i] = -1 ;
+	bool CH_any_fire = false;
+	bool CH_reload = false;
+	bool CH_fire_on = true;
+    //new fire
+
+	sf::Clock CH_clock_4_fire ;
+	float CH_time_NFT = 0;
+/// player  end///////////////////////////////////////////////////////////////// ===============================================================
+
+
+/// ///enemy character ////////////////////////////////////////////////////////
+ float EN_health = 100 ;
+/// global : int EN_x= -1000  , EN_y =200 ;  /// rea
+float Clock_fire1 = 0 , Clock_fire2 = 0 ;
+sf::Clock Clock_fire ;
+
+int game_over = 0 ;
+
+	sf::Image EN_Player ;
+    sf::Sprite EN_player ;
+    EN_Player.LoadFromFile("new f player2.png");
+	EN_player.SetImage(EN_Player);
+	EN_player.Resize(4000,12000);
+
+    int EN_number = 0 ;
+    bool EN_jump = false ;
+	bool EN_up1 = true ;
+	bool EN_running = false ;
+	bool EN_first_right = true ;
+	bool EN_first_left = true ;
+	bool EN_first_down = true ;
+	bool EN_down = false ;
+	bool EN_look_left = true;
+	bool EN_right[10];             // used in fire
+	bool EN_left[10];
+	for(int i = 0 ; i<10 ; i++)
+	{EN_right[i]=false ; EN_left[i] = true ;}
+    /// player image cut
+    int EN_picY1 = PL_stand_L , EN_picX1 = 0 , EN_picX2 = 100 , EN_picY2 = PL_stand_L+PL_defultY ;
+    int EN_repeat_fire = 0 ;
+	bool EN_repeat_Fire = false ;
+
+
+    /// fire
+    sf::Image EN_gun_Fire ;
+	EN_gun_Fire.LoadFromFile("fires.png");
+	sf::Sprite EN_gun_H_fire ;
+	EN_gun_H_fire.SetImage(EN_gun_Fire);
+    EN_gun_H_fire.Resize(100,2600);
+	//fire lvl 1
+
+
+	EN_gun_H_fire.SetSubRect(sf::IntRect(EN_fire_picX1,EN_fire_picY1 , EN_fire_picX2 ,EN_fire_picY2));
+	vector<sf::Sprite> EN_fire ;
+	for (int i = 0 ; i <10 ; i++)
+	{EN_fire.insert(EN_fire.begin(),EN_gun_H_fire);}
+
+
+	int *EN_Xfire = new int [10] , *EN_Yfire = new int [10] ;
+	for (int i = 0 ; i <10 ; i++)
+	{EN_Xfire[i] = EN_x+PL_visual_x; EN_Yfire[i]= EN_y+PL_visual_y;}
+
+	bool EN_fire1[10]  ;
+	for (int i = 0 ; i <10 ; i++)
+	EN_fire1[i] = false ;
+    int EN_save[10];
+    for (int i = 0 ; i <10 ; i++)
+    save[i] = -1 ;
+	bool EN_any_fire = false;
+	bool EN_reload = false;
+	bool EN_fire_on = true;
+    //new fire
+
+	sf::Clock EN_clock_4_fire ;
+	float EN_time_NFT = 0;
+///enemy end//////////////////////////////////////////////////////////////// ==============================================================
+
+
+/// blocks //////////////////////////////////////////////////////////////////
+sf::Image Barmeel ;
+Barmeel.LoadFromFile("bermeel.png");
+sf::Sprite barmeel ;
+//int barmeel_x = -200 , barmeel_y = -375 ;
+barmeel.SetImage(Barmeel);
+
+
+/// blocks end //////////////////////////////////////////////////////////////// ================================================================
+
+	/// time
+    sf::Clock clock ;
+
+	/// music
+	sf::Music music;
+	music.OpenFromFile("clint_mansell_-_requiem_for_a_dream.wav");
+    music.Play();
+
+
+
+
+    while (mcreen.IsOpened())
+    {
+    	mcreen.Clear();
+
+        float time1 = clock.GetElapsedTime();
+        ///cout << time1 << endl;
+
+    	Restart_music(clock , music);
+
+        sf::Event event;
+        while (mcreen.GetEvent(event))
+		{                                                    // event.Key.Code == sf::key:Escaped
+	       if(event.Type==sf::Event::Closed || mcreen.GetInput().IsKeyDown(sf::Key::Escape))
+	      {
+		    	mcreen.Close();
+	      }
+		}
+
+	//sleep el-speed   //(0.08)
+    sf::Sleep(0.07)  ;
+
+	///bermeel code();
+	if(BG_x >= 100 && barmeel_num == 0 )
+	 {barmeel_x = 1100 ; barmeel_y = 375 ; barmeel_num++; barmeel_height = 0 ;}
+
+    barmeel_code(CH_x , CH_y , CH_jump , CH_up1 , BG_x , first_right);
+
+
+
+
+
+/// PLAYER_CODE();
+// 						(mcreen , background , player , CH_fire ,  CH_running , CH_down , first_down ,
+//				        CH_look_left , CH_picY1 , CH_picY2 ,CH_picX1 ,CH_picX2 , CH_x , BG_x , BG_y ,
+//						CH_y , CH_right , CH_left , CH_reload , CH_fire1 , save , first_right , CH_fire_on ,
+//						CH_repeat_fire , CH_repeat_Fire , first_left , CH_jump , CH_up1 , CH_time_NFT ,
+//						CH_any_fire , CH_clock_4_fire , CH_Xfire , CH_Yfire );
+if(main_char_dies == false)
+{
+	/// running
+     if(mcreen.GetInput().IsKeyDown(sf::Key::LControl))
+      { CH_running = true ; }
+      else
+      {CH_running = false ; }
+    ///
+    /// down
+	if(mcreen.GetInput().IsKeyDown(sf::Key::Down)== false)
+	{
+		CH_down = false ;
+		CH_set_down = 0 ;
+	}
+
+
+	if(mcreen.GetInput().IsKeyDown(sf::Key::Down))
+   {
+   	CH_set_down = 60 ;
+   	 Player_down(first_down , CH_look_left , CH_picY1 , CH_picY2 , mcreen ,
+			CH_picX1 ,CH_picX2 , CH_x , CH_running , BG_x , CH_down , CH_fire_on , CH_repeat_Fire , CH_fire1 , CH_right ,
+			CH_left , save );
+	 screen_moves (CH_x , CH_running , BG_x , CH_down , mcreen);
+
+   }
+
+   ///
+
+
+    else if(mcreen.GetInput().IsKeyDown(sf::Key::Right) && mcreen.GetInput().IsKeyDown(sf::Key::Left));
+    /// right
+    else if(mcreen.GetInput().IsKeyDown(sf::Key::Right) && barmeel_exist_R == false )
+       {
+			Player_moves_right ( CH_x , CH_y , CH_picX1 , CH_picY1 , CH_picX2 , CH_picY2 , CH_running ,
+								CH_right ,CH_left, CH_reload , CH_fire1 , save , CH_look_left , first_right , mcreen ,
+								 CH_fire_on , CH_repeat_fire , CH_repeat_Fire);
+			screen_moves (CH_x , CH_running , BG_x , CH_down , mcreen);
+			// fire direction
+
+       }
+    ///
+    /// left
+	 else if(mcreen.GetInput().IsKeyDown(sf::Key::Left) && barmeel_exist_L == false )
+      {
+			Player_moves_left ( CH_x , CH_y , CH_picX1 , CH_picY1 , CH_picX2 , CH_picY2 , CH_running ,
+						      CH_right , CH_left, CH_reload , CH_fire1 , save , CH_look_left , first_left , mcreen
+						      , CH_fire_on ,CH_repeat_fire , CH_repeat_Fire);
+			screen_moves (CH_x , CH_running , BG_x ,CH_down , mcreen);
+      }
+    ///
+    /// stand
+    if(mcreen.GetInput().IsKeyDown(sf::Key::Left) == false && mcreen.GetInput().IsKeyDown(sf::Key::Right) == false&& mcreen.GetInput().IsKeyDown(sf::Key::Down) == false)       // reset player image
+	 player_stands_up (CH_picX1 , CH_picX2 , first_right , first_left , first_down ,CH_look_left , mcreen ,
+						CH_fire_on , CH_repeat_fire , CH_repeat_Fire , CH_picY1 , CH_picY2 , CH_fire1 ,
+					    CH_right , CH_left , save );
+	///
+
+    /// jump }
+	 if(mcreen.GetInput().IsKeyDown(sf::Key::Space)||CH_jump == true  )
+       Player_jump (CH_y , CH_up1 , CH_jump );
+    ///
+
+    // dies
+    Check_fire_hit(EN_Xfire , EN_Yfire , CH_x , CH_y , EN_fire1 , CH_health , CH_down , EN_down , BG_x);
+     if(CH_health <= 0)
+   {
+
+		main_char_dies = true ;
+   }
+}
+else // dies = true
+{
+	//sf::Sleep(.1);
+	Player_die(CH_picX1,CH_picY1 , CH_picX2 , CH_picY2 , CH_look_left );
+	 sf::Sleep(0.01)  ;
+	if(dies_pic == 4)
+  {
+  	CH_y = -1000 ;
+  	main_char_dies = false ;
+  	dies_pic= 0 ;
+  }
+}
+
+
+    background.SetSubRect(sf::IntRect(BG_x,BG_y,BG_x+1300,BG_y+650));
+    mcreen.Draw(background);
+    /// @background draw .
+     player.SetSubRect(sf::IntRect(CH_picX1,CH_picY1 , CH_picX2 , CH_picY2));
+	 player.SetPosition((CH_x), (CH_y)) ;
+	 mcreen.Draw(player) ;
+	///@player draw .
+
+
+
+    /// fire
+
+    CH_time_NFT = CH_clock_4_fire.GetElapsedTime();
+    // fire exist ?
+		for(int i = 0 ; i <10 ; i++)
+		if(CH_fire1[i]==true)
+		{CH_any_fire = true ; break ;}
+		else
+		CH_any_fire = false;
+
+ /// load image fire
+
+
+	Load_image_fire(CH_fire1 , CH_look_left , CH_right , CH_fire_picY1 , CH_fire_picX1 , CH_fire_picY2 , CH_fire_picX2 , CH_gun_H_fire ,
+						CH_fire , CH_left , mcreen , 200 , 500 , save);
+
+
+	 if(mcreen.GetInput().IsKeyDown(sf::Key::Z) || CH_any_fire == true )
+	   Fire_moves(mcreen , CH_time_NFT , CH_clock_4_fire , CH_fire , CH_Xfire , CH_Yfire , CH_x , CH_y ,
+				 CH_fire1 , CH_right , CH_left , CH_reload , CH_fire_on , save , CH_look_left , CH_fire_picY1 ,
+				  CH_fire_picX1 , CH_fire_picY2  , CH_fire_picX2 , CH_down);
+
+
+
+	if(mcreen.GetInput().IsKeyDown(sf::Key::Z) == false)
+		{CH_fire_on = true ;}
+
+
+	///
+	///@fire draw .
+
+
+       //  cout <<CH_x+PL_visual_x <<endl;
+
+		// return back
+		if(CH_x+PL_visual_x<-70)
+		{
+			CH_x=-100;
+			mcreen.Clear();
+		}
+
+
+
+///ENEMY_CODE();
+
+// create 1st enemy
+if(BG_x >= 500 && EN_number == 0 )
+{ EN_x = 1100; EN_y =200 ; EN_number++; EN_look_left = true ;}
+
+if(CH_x > EN_x)
+{ EN_look_left = false ;}
+else
+{
+  EN_look_left = true ;
+}
+
+       enemy_control = true ;
+      Clock_fire1 = Clock_fire.GetElapsedTime() ;
+      //cout << "fire 1 " << Clock_fire1 << " fire 2 " << Clock_fire2 << endl ;
+    if(enemy_dies == false || EN_any_fire==true )
+    {
+       // press fire
+      if(Clock_fire1-Clock_fire2>=2 )
+      {
+          Clock_fire2 = Clock_fire.GetElapsedTime() ;
+          EN_press_z = true ;
+
+      }
+
+  //stand up
+    if(EN_press_left == false && EN_press_right == false && EN_press_down == false  )
+enemy_stands_up (EN_picX1 , EN_picX2 , EN_first_right , EN_first_left , EN_first_down ,EN_look_left , mcreen ,
+						EN_fire_on , EN_repeat_fire , EN_repeat_Fire , EN_picY1 , EN_picY2 , CH_fire1 , CH_right , CH_left , save );
+
+//  if( EN_x-CH_x >=400 )
+//   {
+//    EN_press_left= true ;
+//   enemy_moves_left( EN_x , EN_y , EN_picX1 , EN_picY1 , EN_picX2 , EN_picY2 , EN_running ,
+//               EN_right , EN_left, EN_reload , EN_fire1 , EN_save , EN_look_left , EN_first_left , mcreen
+//	          , EN_fire_on ,EN_repeat_fire , EN_repeat_Fire);
+//
+//    }
+//  else
+//    EN_press_left= false ;
+//
+//
+//  if( CH_x-EN_x >=400 )
+//  {
+//     EN_press_right = true ;
+//     enemy_moves_right ( EN_x , EN_y , EN_picX1 , EN_picY1 , EN_picX2 , EN_picY2 , EN_running ,
+//						EN_right ,EN_left, EN_reload , EN_fire1 , EN_save , EN_look_left , EN_first_right , mcreen ,
+//						 EN_fire_on , EN_repeat_fire , EN_repeat_Fire);
+//
+//   }
+//  else
+//    EN_press_right = false ;
+
+
+for(int i = 0 ; i <10 ; i++)
+		if(EN_fire1[i]==true)
+		{EN_any_fire = true ; break ;}
+		else
+		EN_any_fire = false;
+
+/// load image
+ Load_image_fire(EN_fire1 , EN_look_left , EN_right , EN_fire_picY1 , EN_fire_picX1 , EN_fire_picY2 , EN_fire_picX2 , EN_gun_H_fire ,
+						EN_fire , EN_left , mcreen , 0 , 300 , EN_save);
+
+ Fire_moves(mcreen , EN_time_NFT , EN_clock_4_fire , EN_fire , EN_Xfire , EN_Yfire , EN_x , EN_y ,
+				 EN_fire1 , EN_right , EN_left , EN_reload , EN_fire_on , EN_save , EN_look_left , EN_fire_picY1 ,
+				  EN_fire_picX1 , EN_fire_picY2  , EN_fire_picX2 , EN_down);
+
+
+
+ EN_press_z = false ;
+EN_fire_on = true ;
+
+
+ Check_fire_hit(CH_Xfire , CH_Yfire , EN_x , EN_y , CH_fire1 , EN_health , EN_down , CH_down , BG_x);
+
+  if(EN_health <= 0)
+   {
+
+		enemy_dies = true ;
+   }
+}
+else // dies = true
+{
+	//sf::Sleep(.1);
+	Player_die(EN_picX1,EN_picY1 , EN_picX2 , EN_picY2 , EN_look_left );
+	// sf::Sleep(0.07)  ;
+	if(dies_pic == 4)
+  {
+  	EN_y = -1000 ;
+  	enemy_dies = false ;
+  	dies_pic= 0 ;
+  }
+}
+
+
+
+    //cout << CH_health << " ,, ,, " << EN_health << endl;
+
+       cout << " ch_x " << CH_x << endl  << " ch_y " << CH_y << endl ;
+
+EN_player.SetPosition(EN_x , EN_y);
+EN_player.SetSubRect(sf::IntRect(EN_picX1,EN_picY1 , EN_picX2 , EN_picY2));
+mcreen.Draw(EN_player);
+
+cout << " CH_Yfire :  " << EN_Yfire[1]  << endl << "  EN_y : " << EN_y <<endl ;
+
+enemy_control = false ;
+
+/// blocks code ()
+barmeel.SetPosition(barmeel_x , barmeel_y);
+mcreen.Draw(barmeel);
+
+    if(main_char_dies == true )//&& game_over == 3 )
+    {
+       // system("pause");
+    }
+mcreen.Display();
+
+EN_fire.clear() ;
+CH_fire.clear();
+}
+
+    return EXIT_SUCCESS;
+
+}
+
+
+
+void Restart_music(sf::Clock& clock , sf::Music& music)
+{
+		long long time = clock.GetElapsedTime();
+		if(time %260 == 0)
+			{
+			music.OpenFromFile("clint_mansell_-_requiem_for_a_dream.wav");
+			music.Play();
+			}
+		// long long limit
+		if(time >=(INT_MAX-1000))
+        clock.Reset();
+
+}
+
+
+void barmeel_code (int& CH_x , int& CH_y , bool& CH_jump , bool& CH_up1 , int& BG_x , bool& first_right)
+{
+
+if(barmeel_x > CH_x )
+{                                      //210
+       if(barmeel_x- CH_x <= 220 && barmeel_x- CH_x>50   && CH_y>110 )
+  { barmeel_exist_R = true  ; }
+  else if(CH_y <= 110 && barmeel_x- CH_x <= 220  && barmeel_x- CH_x> 50  )
+  {barmeel_exist_R = false  ; barmeel_place = true ; }//barmeel_height = 110 ;}
+  else //if(CH_up1 == false && CH_jump == false)
+ {barmeel_exist_R = false ;  barmeel_place = false ; barmeel_height = 0 ; CH_y+= barmeel_height ;}
+
+	if(barmeel_place == true && CH_y > 110 &&  CH_x+50 <= barmeel_x )//   && first_right == false)
+	{barmeel_height = 110 ;  }
+}
+
+else if( BG_x >= 100 && barmeel_num == 1)
+{ barmeel_num++; barmeel_height = 0 ;barmeel_place = false ; barmeel_exist_R = false ;}
+
+//              if( barmeel_exist_L ==  true  )
+//              cout << " barmeel_exist_L ==  true  " <<endl;
+//if(barmeel_x <= CH_x )
+//{                                      //210
+//       if( CH_x- barmeel_x <=10  && CH_y>110 )
+//  { barmeel_exist_L = true  ; }
+//  else if(CH_y <= 110 && CH_x-barmeel_x  <= 10  && CH_x-barmeel_x > 50  )
+//  {barmeel_exist_L = false  ; barmeel_place = true ; }
+//  else //if(CH_up1 == false && CH_jump == false)
+// {barmeel_exist_L = false ;  barmeel_place = false ; barmeel_height = 0 ; CH_y+= barmeel_height ;}
+//
+//	if(barmeel_place == true && CH_y > 110 &&  CH_x+100 >= barmeel_x )//   && first_right == false)
+//	{barmeel_height = 110 ;  }
+//}
+
+
+       if(barmeel_place == true && CH_jump == false )
+       CH_y = 110 ;
+        if(barmeel_place == false && CH_jump == false )
+		CH_y = 200 ;
+
+}
+
+//void PLAYER_CODE(sf::RenderWindow& mcreen , sf::Sprite& background , sf::Sprite& player ,
+//				 vector<sf::Sprite>& CH_fire ,  bool& CH_running , bool& CH_down , bool&  first_down,
+//				  bool& CH_look_left , int& CH_picY1, int& CH_picY2 ,int& CH_picX1,int& CH_picX2 ,
+//				  int& CH_x , int& BG_x, int& BG_y, int& CH_y, bool CH_right[10] , bool CH_left[10] ,
+//				  bool& CH_reload , bool CH_fire1[10], int save[10] , bool& first_right , bool& CH_fire_on ,
+//				  int& CH_repeat_fire , bool& CH_repeat_Fire , bool& first_left , bool& CH_jump ,
+//				  bool& CH_up1, float& CH_time_NFT , bool& CH_any_fire , sf::Clock& CH_clock_4_fire ,
+//				  int CH_Xfire[10] , int CH_Yfire[10] )
+
+
+void player_stands_up (int& CH_picX1 , int& CH_picX2 , bool& first_right , bool& first_left ,
+					bool& first_down , bool& CH_look_left , sf::RenderWindow& mcreen ,bool& CH_fire_on ,
+					int& CH_repeat_fire , bool& CH_repeat_Fire , int& CH_picY1 , int& CH_picY2 , bool CH_fire1[] ,
+					bool CH_right[] , bool CH_left[] , int save[] )
+{
+	CH_picX1 = 0 , CH_picX2 = 100 ;
+        first_right = true ; first_left = true ; first_down = true ;
+
+        if(CH_look_left == false)
+        {
+        	if((mcreen.GetInput().IsKeyDown(sf::Key::Z) == false || CH_fire_on == false)
+			&& CH_repeat_Fire == false)
+        	{CH_picY1 = PL_right ; CH_picY2 = PL_right+PL_defultY ;}
+			else
+			{
+				CH_picY1 = PL_right_F ; CH_picY2 = PL_right_F+PL_defultY ;
+				CH_repeat_Fire = true ;
+				CH_repeat_fire++;
+				if(CH_repeat_fire == 1 )
+				{CH_picX1 = 0 ; CH_picX2 = 100 ;  }
+				else
+				{CH_picX1 = 100 ; CH_picX2 = 200 ; }
+				if(CH_repeat_fire>= 2)
+			  {
+			  	CH_repeat_Fire = false;
+			  	CH_repeat_fire = 0 ;
+			  }
+			}
+
+			for(int i = 0 , y = 0 ; i<10 ; i++)
+	    {
+			if(CH_fire1[i] == false)
+			{
+			CH_right[i] = true ;
+			CH_left[i] = false ;
+			}
+			else
+			{save[y] = i ; y++;}
+	    }
+		}
+        else
+        {         // left
+        	if((mcreen.GetInput().IsKeyDown(sf::Key::Z) == false || CH_fire_on == false)
+			&& CH_repeat_Fire == false)
+        	{CH_picY1 = PL_left ; CH_picY2 = PL_left+PL_defultY ;}
+        		else
+			{
+				CH_picY1 = PL_left_F ; CH_picY2 = PL_left_F+PL_defultY ;
+				CH_repeat_Fire = true ;
+				CH_repeat_fire++;
+				if(CH_repeat_fire == 1 )
+				{CH_picX1 = 0 ; CH_picX2 = 100 ; }
+				else
+				{CH_picX1 = 100 ; CH_picX2 = 200 ;  }
+				  if(CH_repeat_fire>= 2)
+			  {
+			  	CH_repeat_Fire = false;
+			  	CH_repeat_fire = 0 ;
+			  }
+			}
+
+			for(int i = 0 , y = 0 ; i<10 ; i++)
+	    {
+			if(CH_fire1[i] == false)
+			{
+			CH_right[i] = false ;
+			CH_left[i] = true ;
+			}
+			else
+			{save[y] = i ; y++;}
+	    }
+        }
+}
+
+
+void Player_moves_right(int& CH_x , int& CH_y , int& CH_picX1 , int& CH_picY1 , int& CH_picX2 ,
+						 int& CH_picY2 , bool& CH_running , bool CH_right[10] , bool CH_left[10] ,
+						  bool& CH_reload , bool CH_fire1[10] , int save[10] , bool &CH_look_left , bool& first_right ,
+						 sf::RenderWindow& mcreen , bool& CH_fire_on, int& CH_repeat_fire , bool& CH_repeat_Fire)
+{
+	    if(CH_running == false)
+		{CH_x+=6; }
+		else
+		{CH_x+=18; }
+
+		if((mcreen.GetInput().IsKeyDown(sf::Key::Z) == false ||
+			 CH_fire_on == false) && CH_repeat_Fire == false)
+		{
+			CH_picY1 = PL_right ;
+			CH_picY2 = PL_right + PL_defultY;
+			if(first_right == false)
+			CH_picX1+=PL_defultX;
+			CH_picX1%=900 ;
+			if(first_right == false)
+			{
+				if(CH_picX1 == 0)
+				CH_picX1+=200;
+				if(CH_picX1 == 1)
+				CH_picX1+=100;   //
+			}
+			CH_picX2=CH_picX1+ PL_defultX;
+		}
+		else{
+				CH_repeat_fire++;
+				CH_repeat_Fire = true ;
+
+				CH_picY1 = PL_right_F ;
+				CH_picY2 = PL_right_F + PL_defultY;
+				if(first_right == false)
+				CH_picX1+=PL_defultX;
+
+				CH_picX1%=900 ;
+				if(first_right == false)
+				{
+					if(CH_picX1 == 0)
+					CH_picX1+=300;
+					if(CH_picX1 == 1)
+					CH_picX1+=200;   //
+					if(CH_picX1 == 2)
+					CH_picX1+=100;
+				}
+				// starting fire
+				if(CH_repeat_fire==1)
+				{
+					if((CH_picX1/100)%2 == 1 )
+					CH_picX1+=100 ;
+				}
+
+				CH_picX1%=900 ;
+			CH_picX2=CH_picX1+ PL_defultX;
+			  if(CH_repeat_fire>= 2)
+			  {
+			  	CH_repeat_Fire = false;
+			  	CH_repeat_fire = 0 ;
+			  }
+		}
+
+
+
+		CH_look_left = false ;
+		first_right = false ;
+
+	   for(int i = 0 , y = 0 ; i<10 ; i++)
+	    {
+			if(CH_fire1[i] == false)
+			{
+			CH_right[i] = true ;
+			CH_left[i] = false ;
+			}
+			else
+			{save[y] = i ; y++;}
+	    }
+
+}
+
+void Player_moves_left(int& CH_x , int& CH_y , int& CH_picX1 , int& CH_picY1 , int& CH_picX2 , int& CH_picY2 ,
+					bool& CH_running,  bool CH_right[10] , bool CH_left[10] ,bool& CH_reload , bool CH_fire1[10] ,
+					 int save[10] , bool &CH_look_left , bool& first_left , sf::RenderWindow& mcreen , bool& CH_fire_on,
+					 int& CH_repeat_fire , bool& CH_repeat_Fire)
+{
+		 if(CH_running == false)
+		{CH_x-=6; }
+		else
+		{CH_x-=18; }
+
+		if((mcreen.GetInput().IsKeyDown(sf::Key::Z) == false || CH_fire_on == false)
+			&& CH_repeat_Fire == false)
+		{
+			CH_picY1 = PL_left ;
+			CH_picY2 = PL_left + PL_defultY;
+			if(first_left == false)
+			CH_picX1+=PL_defultX;
+			CH_picX1%=900 ;
+			if(first_left == false)
+			{
+				if(CH_picX1 == 0)
+				CH_picX1+=200;
+				if(CH_picX1 == 1)
+				CH_picX1+=100;   //
+			}
+			CH_picX2=CH_picX1+ PL_defultX;
+		}
+		else{
+				CH_repeat_fire++;
+				CH_repeat_Fire = true ;
+
+				CH_picY1 = PL_left_F ;
+				CH_picY2 = PL_left_F + PL_defultY;
+				if(first_left == false)
+				CH_picX1+=PL_defultX;
+
+				CH_picX1%=900 ;
+				if(first_left == false)
+				{
+					if(CH_picX1 == 0)
+					CH_picX1+=300;
+					if(CH_picX1 == 1)
+					CH_picX1+=200;   //
+					if(CH_picX1 == 2)
+					CH_picX1+=100;
+				}
+				// starting fire
+				if(CH_repeat_fire==1)
+				{
+					if((CH_picX1/100)%2 == 1 )
+					CH_picX1+=100 ;
+				}
+
+				CH_picX1%=900 ;
+			CH_picX2=CH_picX1+ PL_defultX;
+			  if(CH_repeat_fire>= 2)
+			  {
+			  	CH_repeat_Fire = false;
+			  	CH_repeat_fire = 0 ;
+			  }
+		}
+
+	   CH_look_left = true ;
+	   first_left = false ;
+
+	    for(int i = 0 , y = 0; i<10 ; i++)
+	    {
+			if(CH_fire1[i] == false)
+			{
+			CH_left[i] = true ;
+			CH_right[i] = false ;
+			}
+			else
+			{  save[y] = i ;y++;}
+
+	    }
+}
+
+void Player_jump(int& CH_y , bool& CH_up1 , bool& CH_jump)
+{
+	  // cout << y <<endl;
+           cout << " CH_y " << CH_y <<endl;
+	  ///sf::Sleep(.009);
+		CH_jump = true ;
+       	if(CH_y>24-barmeel_height && CH_up1== true )
+      	{             //-20
+		CH_y-=22;
+      	}
+      	/// dif = 46
+		else if(CH_y<199 - barmeel_height  )
+		{
+			CH_y+=25;
+			CH_up1= false ;
+
+		}
+
+		else if(CH_y>=199-barmeel_height && CH_up1 == false  )
+		{  if(barmeel_height == 0 )
+			CH_y = 200 ;
+			else
+			CH_y = barmeel_height ;
+			CH_jump = false ;
+		    CH_up1 = true ;
+		}
+
+//		 	if(CH_y>24-90 && CH_up1== true && barmeel_place == true)
+//      	{             //-20
+//		CH_y-=22;
+//      	}
+//      		else if(CH_y<199+90 && barmeel_place == true)
+//		{
+//			CH_y+=25;
+//			CH_up1= false ;
+//
+//		}
+//
+//		if(barmeel_place == true  && CH_up1 == false && CH_y>=110)
+//	{
+//	CH_jump = false ;
+//	CH_up1 = true ;
+//	}
+
+}
+
+void Player_down(bool& first_down , bool& CH_look_left , int& CH_picY1 , int& CH_picY2 ,
+				sf::RenderWindow& mcreen , int& CH_picX1 , int& CH_picX2 , int& CH_x , bool& CH_running ,
+				int& BG_x , bool& CH_down , bool& CH_fire_on , bool& CH_repeat_Fire , bool CH_fire1[] , bool CH_right[] ,
+				bool CH_left[] , int save[] )
+ {
+
+		CH_down = true ;
+		if ( (mcreen.GetInput().IsKeyDown(sf::Key::Z) == false || CH_fire_on == false)
+			&& CH_repeat_Fire == false  )
+		{
+			if(CH_look_left == false)
+			{
+				CH_picY1 = PL_down_R ;
+				CH_picY2 = PL_down_R + PL_defultY;
+			}
+			else
+			{
+				CH_picY1 = PL_down_L ;
+				CH_picY2 = PL_down_L + PL_defultY;
+			}
+		}
+		else
+		{
+			if(CH_look_left == false)
+			{
+				CH_picY1 = PL_down_R_F ;
+				CH_picY2 = PL_down_R_F + PL_defultY;
+			}
+			else
+			{
+				CH_picY1 = PL_down_L_F ;
+				CH_picY2 = PL_down_L_F + PL_defultY;
+			}
+		}
+        if(mcreen.GetInput().IsKeyDown(sf::Key::Right)==false &&
+		mcreen.GetInput().IsKeyDown(sf::Key::Left) ==false)
+        {
+			if(first_down == false)
+			CH_picX1+=PL_defultX;
+			CH_picX1%=200 ;
+			if(first_down == false)
+			{
+				if(CH_picX1 == 0)
+				CH_picX1+=100;
+			}
+			CH_picX2=CH_picX1+ PL_defultX;
+        }
+
+
+		if(mcreen.GetInput().IsKeyDown(sf::Key::Right)&& barmeel_exist_R== false)
+		{
+			CH_look_left = false ;
+
+			if ( (mcreen.GetInput().IsKeyDown(sf::Key::Z) == false || CH_fire_on == false)
+			&& CH_repeat_Fire == false  )
+			{
+				CH_picY1 = PL_down_R ;
+				CH_picY2 = PL_down_R + PL_defultY;
+			}
+			else
+			{
+
+				CH_picX1= -100 ;
+				CH_picY1 = PL_down_R_F ;
+				CH_picY2 = PL_down_R_F + PL_defultY;
+			}
+			CH_x+=3;
+			CH_picX1%=300 ;
+			CH_picX1+=200 ;
+			CH_picX2=CH_picX1+ PL_defultX;
+
+				for(int i = 0 , y = 0 ; i<10 ; i++)
+	    {
+			if(CH_fire1[i] == false)
+			{
+			CH_right[i] = true ;
+			CH_left[i] = false ;
+			}
+			else
+			{save[y] = i ; y++;}
+	    }
+		}
+		else if(mcreen.GetInput().IsKeyDown(sf::Key::Left) && barmeel_exist_L == false)
+        {      CH_look_left = true ;
+
+        	if ( (mcreen.GetInput().IsKeyDown(sf::Key::Z) == false || CH_fire_on == false)
+			&& CH_repeat_Fire == false  )
+			{
+				CH_picY1 = PL_down_L ;
+				CH_picY2 = PL_down_L + PL_defultY;
+			}
+			else
+			{
+			CH_picX1= -100 ;
+				CH_picY1 = PL_down_L_F ;
+				CH_picY2 = PL_down_L_F + PL_defultY;
+			}
+        	CH_x-=3;
+			CH_picX1%=300 ;
+			CH_picX1+=200 ;
+			CH_picX2=CH_picX1+ PL_defultX;
+
+				for(int i = 0 , y = 0 ; i<10 ; i++)
+	    {
+			if(CH_fire1[i] == false)
+			{
+			CH_right[i] = false ;
+			CH_left[i] = true ;
+			}
+			else
+			{save[y] = i ; y++;}
+	    }
+
+        }
+        // function
+
+		first_down = false ;
+
+
+
+}
+
+void enemy_stands_up (int& CH_picX1 , int& CH_picX2 , bool& first_right , bool& first_left ,
+					bool& first_down , bool& CH_look_left , sf::RenderWindow& mcreen ,bool& CH_fire_on ,
+					int& CH_repeat_fire , bool& CH_repeat_Fire , int& CH_picY1 , int& CH_picY2 , bool CH_fire1[] ,
+					bool CH_right[] , bool CH_left[] , int save[])
+{
+	CH_picX1 = 0 , CH_picX2 = 100 ;
+        first_right = true ; first_left = true ; first_down = true ;
+
+        if(CH_look_left == false)
+        {
+        	if(EN_press_z == false || CH_fire_on == false
+			&& CH_repeat_Fire == false)
+        	{CH_picY1 = PL_right ; CH_picY2 = PL_right+PL_defultY ;}
+			else
+			{
+				CH_picY1 = PL_right_F ; CH_picY2 = PL_right_F+PL_defultY ;
+				CH_repeat_Fire = true ;
+				CH_repeat_fire++;
+				if(CH_repeat_fire == 1 )
+				{CH_picX1 = 0 ; CH_picX2 = 100 ;  }
+				else
+				{CH_picX1 = 100 ; CH_picX2 = 200 ; }
+				if(CH_repeat_fire>= 2)
+			  {
+			  	CH_repeat_Fire = false;
+			  	CH_repeat_fire = 0 ;
+			  }
+			}
+
+			 for(int i = 0 , y = 0 ; i<10 ; i++)
+			{
+				if(CH_fire1[i] == false)
+				{
+				CH_right[i] = true ;
+				CH_left[i] = false ;
+				}
+				else
+				{save[y] = i ; y++;}
+			}
+		}
+        else
+        {         // left
+        	if(EN_press_z == false || CH_fire_on == false
+			&& CH_repeat_Fire == false)
+        	{CH_picY1 = PL_left ; CH_picY2 = PL_left+PL_defultY ;}
+        		else
+			{
+				CH_picY1 = PL_left_F ; CH_picY2 = PL_left_F+PL_defultY ;
+				CH_repeat_Fire = true ;
+				CH_repeat_fire++;
+				if(CH_repeat_fire == 1 )
+				{CH_picX1 = 0 ; CH_picX2 = 100 ; }
+				else
+				{CH_picX1 = 100 ; CH_picX2 = 200 ;  }
+				  if(CH_repeat_fire>= 2)
+			  {
+			  	CH_repeat_Fire = false;
+			  	CH_repeat_fire = 0 ;
+			  }
+			}
+
+			for(int i = 0 , y = 0 ; i<10 ; i++)
+			{
+				if(CH_fire1[i] == false)
+				{
+				CH_right[i] = false ;
+				CH_left[i] = true ;
+				}
+				else
+				{save[y] = i ; y++;}
+			}
+        }
+
+
+}
+
+
+void enemy_moves_left (int& CH_x , int& CH_y , int& CH_picX1 , int& CH_picY1 , int& CH_picX2 , int& CH_picY2 ,
+					bool& CH_running,  bool CH_right[10] , bool CH_left[10] ,bool& CH_reload , bool CH_fire1[10] ,
+					 int save[10] , bool &CH_look_left , bool& first_left , sf::RenderWindow& mcreen , bool& CH_fire_on,
+					 int& CH_repeat_fire , bool& CH_repeat_Fire)
+{
+		 if(CH_running == false)
+		{CH_x-=6; }
+		else
+		{CH_x-=18; }
+		//if(EN_press_left == true )
+        //cout << " EN_press_left " <<endl;
+		if( EN_press_z == false )
+		{
+			CH_picY1 = PL_left ;
+			CH_picY2 = PL_left + PL_defultY;
+			if(first_left == false)
+			CH_picX1+=PL_defultX;
+			CH_picX1%=900 ;
+			if(first_left == false)
+			{
+				if(CH_picX1 == 0)
+				CH_picX1+=200;
+				if(CH_picX1 == 1)
+				CH_picX1+=100;   //
+			}
+			CH_picX2=CH_picX1+ PL_defultX;
+		}
+		else{// true
+				CH_repeat_fire++;
+				CH_repeat_Fire = true ;
+
+				CH_picY1 = PL_left_F ;
+				CH_picY2 = PL_left_F + PL_defultY;
+				if(first_left == false)
+				CH_picX1+=PL_defultX;
+
+				CH_picX1%=900 ;
+				if(first_left == false)
+				{
+					if(CH_picX1 == 0)
+					CH_picX1+=300;
+					if(CH_picX1 == 1)
+					CH_picX1+=200;   //
+					if(CH_picX1 == 2)
+					CH_picX1+=100;
+				}
+				// starting fire
+				if(CH_repeat_fire==1)
+				{
+					if((CH_picX1/100)%2 == 1 )
+					CH_picX1+=100 ;
+				}
+
+				CH_picX1%=900 ;
+			CH_picX2=CH_picX1+ PL_defultX;
+			  if(CH_repeat_fire>= 2)
+			  {
+			  	CH_repeat_Fire = false;
+			  	CH_repeat_fire = 0 ;
+			  }
+		}
+
+	   CH_look_left = true ;
+	   first_left = false ;
+
+	    for(int i = 0 , y = 0; i<10 ; i++)
+	    {
+			if(CH_fire1[i] == false)
+			{
+			CH_left[i] = true ;
+			CH_right[i] = false ;
+			}
+			else
+			{  save[y] = i ;y++;}
+
+	    }
+}
+
+
+void enemy_moves_right(int& CH_x , int& CH_y , int& CH_picX1 , int& CH_picY1 , int& CH_picX2 ,
+						 int& CH_picY2 , bool& CH_running , bool CH_right[10] , bool CH_left[10] ,
+						  bool& CH_reload , bool CH_fire1[10] , int save[10] , bool &CH_look_left , bool& first_right ,
+						 sf::RenderWindow& mcreen , bool& CH_fire_on, int& CH_repeat_fire , bool& CH_repeat_Fire)
+{
+	    if(CH_running == false)
+		{CH_x+=6; }
+		else
+		{CH_x+=18; }
+
+		if((EN_press_z == false ))
+		{
+			CH_picY1 = PL_right ;
+			CH_picY2 = PL_right + PL_defultY;
+			if(first_right == false)
+			CH_picX1+=PL_defultX;
+			CH_picX1%=900 ;
+			if(first_right == false)
+			{
+				if(CH_picX1 == 0)
+				CH_picX1+=200;
+				if(CH_picX1 == 1)
+				CH_picX1+=100;   //
+			}
+			CH_picX2=CH_picX1+ PL_defultX;
+		}
+		else{
+				CH_repeat_fire++;
+				CH_repeat_Fire = true ;
+
+				CH_picY1 = PL_right_F ;
+				CH_picY2 = PL_right_F + PL_defultY;
+				if(first_right == false)
+				CH_picX1+=PL_defultX;
+
+				CH_picX1%=900 ;
+				if(first_right == false)
+				{
+					if(CH_picX1 == 0)
+					CH_picX1+=300;
+					if(CH_picX1 == 1)
+					CH_picX1+=200;   //
+					if(CH_picX1 == 2)
+					CH_picX1+=100;
+				}
+				// starting fire
+				if(CH_repeat_fire==1)
+				{
+					if((CH_picX1/100)%2 == 1 )
+					CH_picX1+=100 ;
+				}
+
+				CH_picX1%=900 ;
+			CH_picX2=CH_picX1+ PL_defultX;
+			  if(CH_repeat_fire>= 2)
+			  {
+			  	CH_repeat_Fire = false;
+			  	CH_repeat_fire = 0 ;
+			  }
+		}
+
+
+
+		CH_look_left = false ;
+		first_right = false ;
+
+	   for(int i = 0 , y = 0 ; i<10 ; i++)
+	    {
+			if(CH_fire1[i] == false)
+			{
+			CH_right[i] = true ;
+			CH_left[i] = false ;
+			}
+			else
+			{save[y] = i ; y++;}
+	    }
+
+}
+
+
+void Load_image_fire(bool CH_fire1[] , bool& CH_look_left , bool CH_right[] , int& CH_fire_picY1 , int& CH_fire_picX1 ,
+					int& CH_fire_picY2 , int& CH_fire_picX2 , sf::Sprite& CH_gun_H_fire , vector<sf::Sprite>&CH_fire ,
+					 bool CH_left[] , sf::RenderWindow& mcreen , int pic_R , int pic_L , int save[] )
+{
+	 if(CH_look_left == true)
+ {
+ 	for(int i = 0 , y = 0 ; i<10 ; i++)
+	    {
+			if(CH_fire1[i] == false)
+			{
+			CH_right[i] = false ;
+			CH_left[i] = true ;
+			}
+			else
+			{save[y] = i ; y++;}
+	    }
+ }
+ else
+ {
+ 	for(int i = 0 , y = 0 ; i<10 ; i++)
+	    {
+			if(CH_fire1[i] == false)
+			{
+			CH_right[i] = true ;
+			CH_left[i] = false ;
+			}
+			else
+			{save[y] = i ; y++;}
+	    }
+ }
+
+	for (int i = 0 ; i <10 ; i++)
+	{
+		if(CH_right[i]== true )
+    { //cout << " right " <<   endl;
+		CH_fire_picY1 = pic_R ; CH_fire_picX1 = 0 ; CH_fire_picY2 = CH_fire_picY1+100 ;
+	 CH_fire_picX2 = 60 ;
+
+	 CH_gun_H_fire.SetSubRect(sf::IntRect(CH_fire_picX1,CH_fire_picY1 , CH_fire_picX2 ,CH_fire_picY2));
+		CH_fire.insert(CH_fire.begin(),CH_gun_H_fire);
+    }
+  if (CH_left[i]== true )
+    {// cout << " left " <<   endl;
+    	CH_fire_picY1 = pic_L ; CH_fire_picX1 = 0 ; CH_fire_picY2 = CH_fire_picY1+100 ;
+	 CH_fire_picX2 = 60 ;
+
+	 CH_gun_H_fire.SetSubRect(sf::IntRect(CH_fire_picX1,CH_fire_picY1 , CH_fire_picX2 ,CH_fire_picY2));
+		CH_fire.insert(CH_fire.begin(),CH_gun_H_fire);
+    }
+	}
+}
+
+
+void Fire_moves(sf::RenderWindow& mcreen , float& CH_time_NFT , sf::Clock& CH_clock_4_fire ,
+				 vector<sf::Sprite>&CH_fire , int CH_Xfire[10] , int CH_Yfire[10] , int& CH_x , int& CH_y ,
+				 bool CH_fire1[10], bool CH_right[10],bool CH_left[10] , bool& CH_reload , bool& CH_fire_on ,
+				 int save[10] , bool& CH_look_left , int& CH_fire_picY1 , int& CH_fire_picX1 ,
+				 int& CH_fire_picY2  , int& CH_fire_picX2 , bool& CH_down)
+{
+		// creat a new fire sprite                                               //0.2                                                                  //fires limit
+		if( (mcreen.GetInput().IsKeyDown(sf::Key::Z) == true &&(CH_time_NFT >(float)0.2 ) && CH_fire_on == true) || EN_press_z == true )
+		{                                                                                                                                         //0.17
+
+			CH_fire_on = false ;
+			CH_clock_4_fire.Reset();
+
+
+			for(int i = 0 ; i <10 ; i++)
+			{
+				if(CH_fire1[i] == false)
+				{                                      // cuz of resize
+					// down case
+                 //  if(enemy_control == false )
+                   if(CH_down == true )
+                    {
+					CH_Xfire[i] = CH_x+PL_visual_x;
+					CH_Yfire[i] = CH_y+PL_visual_y +CH_set_down;
+                    }
+                    else
+                    {
+						CH_Xfire[i] = CH_x+PL_visual_x;
+						CH_Yfire[i] = CH_y+PL_visual_y;
+                    }
+					CH_fire1[i] = true;
+					if(CH_look_left == true)
+					{CH_left[i] = true ;CH_right[i] = false ;  }
+					if(CH_look_left == false)
+					{CH_right[i] = true ;CH_left[i] = false ; }
+					break;
+				}
+			}
+
+		}
+
+
+		// which fire;s exist
+		for(int i = 0 ; i < 10 ; i++)
+		{
+			if(CH_fire1[i]== true )
+			{
+		// velocity
+		 if(CH_right[i]==true)
+		  CH_Xfire[i]+=70 ;
+		 if(CH_left[i]==true)
+		 CH_Xfire[i]-=70;
+
+		// position & draw
+		CH_fire[i].SetPosition( CH_Xfire[i],CH_Yfire[i]);
+		mcreen.Draw(CH_fire[i]);
+
+        /// enemy fire on
+        EN_press_z = false ;
+
+		// end & remove
+		  if(CH_Xfire[i]>=1300||CH_Xfire[i]<0)
+		  {
+		  	CH_Yfire[i] = -300;
+		  	CH_fire1[i] = false;
+		  }
+
+			}
+		}
+}
+
+void screen_moves (int& CH_x, bool& CH_running, int&BG_x , bool& CH_down ,
+				 sf::RenderWindow& mcreen)
+{
+	if(CH_x+PL_visual_x >470)
+	{
+		if(CH_down== true && (mcreen.GetInput().IsKeyDown(sf::Key::Right) == true ||
+								                 mcreen.GetInput().IsKeyDown(sf::Key::Left) == true  )  )
+		{BG_x+=3;
+		EN_x-=3;
+		barmeel_x -= 3;
+		}
+	    else if(CH_running == true && CH_down == false)
+		{BG_x+=18;
+		EN_x-=18;
+		barmeel_x -=18 ;
+		}
+		else if(CH_down == false)
+		{BG_x+=6;
+		EN_x-=6;
+		barmeel_x -= 6;
+		}
+		CH_x = 470-PL_visual_x;
+	}
+	else if(CH_x+PL_visual_x <= 50 && BG_x >= 6)
+	{
+		if(CH_down== true && (mcreen.GetInput().IsKeyDown(sf::Key::Right) == true ||
+								                 mcreen.GetInput().IsKeyDown(sf::Key::Left) == true  )  )
+		{BG_x-=3;
+		EN_x+=3;
+		barmeel_x +=3 ;
+		}
+		else if(CH_running == true && CH_down == false)
+		{BG_x-=18;
+		EN_x+=18;
+		barmeel_x +=18;
+		}
+		else if(CH_down == false)               //if(BG_x >= 18)
+		{BG_x-=6;
+		EN_x+=6;
+		barmeel_x +=6;
+		}
+		CH_x = 50-PL_visual_x;
+	}
+}
+
+void Check_fire_hit (int CH_Xfire[] , int CH_Yfire[] , int& EN_x , int& EN_y , bool CH_fire1[] , float& EN_health ,
+					 bool& EN_down , bool& CH_down , int& BG_x )
+{
+
+     for(int i = 0 ; i < 10 ; ++i)
+     {
+      if((CH_Xfire[i] <= EN_x+PL_visual_x+100 && CH_Xfire[i] >= EN_x+PL_visual_x-100 )&&
+         CH_Yfire[i] <= EN_y+PL_visual_y +90&& CH_Yfire[i]>= EN_y+PL_visual_y-80  )///&& EN_down == false  )
+         {                   //-70                                                               //80
+         	if(EN_down == true && CH_Yfire[i] <= EN_y+PL_visual_y+90  &&  CH_Yfire[i] >= EN_y+PL_visual_y +70)
+         	{
+            EN_health -= 10 ;
+            CH_Yfire[i] = -300;
+		  	CH_fire1[i] = false;
+         	}
+         	else if (EN_down == false)
+         	{
+         	 EN_health -= 10 ;
+            CH_Yfire[i] = -300;
+		  	CH_fire1[i] = false;
+			}                                                                    //BG_x >= 100
+		}
+
+            if( CH_Yfire[i] >= 375 && BG_x >= 100 &&  CH_Xfire[i] >= barmeel_x && CH_Xfire[i]<=barmeel_x+70)
+              {
+              	 CH_Yfire[i] = -300;
+				 CH_fire1[i] = false;
+              }
+
+      }
+}
+
+void Player_die (int& CH_picX1, int& CH_picY1 , int &CH_picX2 , int &CH_picY2 , bool& CH_look_left)
+{
+	if(CH_look_left == false)
+	{
+		CH_picY1 =PL_die_R;
+	   	CH_picY2 = PL_die_R + PL_defultY;
+	   	CH_picX1+=PL_defultX;
+		CH_picX1%=400;
+		CH_picX2=CH_picX1+ PL_defultX;
+	}
+	else
+	{
+		CH_picY1 =PL_die_L;
+	   	CH_picY2 = PL_die_L + PL_defultY;
+	   	CH_picX1+=PL_defultX;
+		CH_picX1%=400;
+		CH_picX2=CH_picX1+ PL_defultX;
+	}
+	dies_pic++;
+}
+
+
+
